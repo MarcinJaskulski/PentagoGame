@@ -18,7 +18,7 @@ public class KozakPlayer extends Player {
 
     private Random random = new Random(0xdeadbeef);
     public int info = 0;
-    
+     
     public Color opponentColor;
 
     public static void main(String[] args) {}
@@ -83,29 +83,29 @@ public class KozakPlayer extends Player {
 				
 				if(poz == 4) {// x=j, y=i
 					// co obrocic -> po przekatnej
-					int[] diagonalRotate = diagonalRotate(i,j);
-					int[] rotateFrom = {diagonalRotate[0], diagonalRotate[1]}; //x,y
-					int[] roatteTo  = {diagonalRotate[2], diagonalRotate[3]}; //x,y   						
-					
-					// czy wychodzi poza zakres
-					if(j+1==b.getSize() && b.getState(j-4, i) == Color.EMPTY) 
-						return new PentagoMove(j-4,i,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
-					if(j+1!=b.getSize() && b.getState(j+1, i) == Color.EMPTY) 
-						return new PentagoMove(j+1,i,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
-				}
-				
-				if(pion == 4) { // odwrócone ośki x=i, y=j
-					// co obrocic -> po przekatnej
 					int[] diagonalRotate = diagonalRotate(j,i);
 					int[] rotateFrom = {diagonalRotate[0], diagonalRotate[1]}; //x,y
 					int[] roatteTo  = {diagonalRotate[2], diagonalRotate[3]}; //x,y   						
 					
-					// czy wychodzi poza zakres
-					if(j+1==b.getSize() && b.getState(i, j-4) == Color.EMPTY)  
-						return new PentagoMove(i,j-4,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
-					if(j+1!=b.getSize() && b.getState(i, j+1) == Color.EMPTY) 
-						return new PentagoMove(i,j+1,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
+					// czy moge na kocu polozyc, jesli nie to na poczatku
+					if(j+1!=b.getSize() && b.getState(j+1, i) == Color.EMPTY) 
+						return new PentagoMove(j+1,i,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
+					else if(j-4>=0 && b.getState(j-4, i) == Color.EMPTY) 
+						return new PentagoMove(j-4,i,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
 				}
+				
+				if(pion == 4) { // odwrócone ośki x=i, y=j
+					// co obrocic -> po przekatnej
+					int[] diagonalRotate = diagonalRotate(i,j);
+					int[] rotateFrom = {diagonalRotate[0], diagonalRotate[1]}; //x,y
+					int[] roatteTo  = {diagonalRotate[2], diagonalRotate[3]}; //x,y   						
+					
+					// czy moge na dole, jeslinie to na górze
+					if(j+1!=b.getSize() && b.getState(i, j+1) == Color.EMPTY) 
+						return new PentagoMove(i,j+1,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());				
+					else if(j-4>=0 && b.getState(i, j-4) == Color.EMPTY) 
+						return new PentagoMove(i,j-4,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
+					}
 					
 			}
 		}
@@ -131,28 +131,28 @@ public class KozakPlayer extends Player {
 					pion=0;
 				
 				if(poz == 4) {
-					//co obrocic -> po przekatnej
-					int[] diagonalRotate = diagonalRotate(i,j);
+					//co obrocic -> ta gdzie jest czasc zwycieskiej lini
+					int[] diagonalRotate = thisSquareRotate(j,i);
 					int[] rotateFrom = {diagonalRotate[0], diagonalRotate[1]}; //x,y
 					int[] roatteTo  = {diagonalRotate[2], diagonalRotate[3]}; //x,y   						
 					
-					// czy wychodzi poza zakres i nie moze tam byc mojego juz
-					if(j+1==b.getSize() && b.getState(j-4, i) == Color.EMPTY) 
-						return new PentagoMove(j-4,i,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
+					// czy moge ustwaic na koncu, jesli nie to  sprobuje na poczatku
 					if(j+1!=b.getSize() && b.getState(j+1, i) == Color.EMPTY) 
 						return new PentagoMove(j+1,i,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
+					else if(j-4>=0 && b.getState(j-4, i) == Color.EMPTY) 
+						return new PentagoMove(j-4,i,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
 				}
 				if(pion == 4) {
-					//co obrocic -> po przekatnej
-					int[] diagonalRotate = diagonalRotate(j,i);
+					//co obrocic -> ta gdzie jest czasc zwycieskiej lini
+					int[] diagonalRotate = thisSquareRotate(i,j);
 					int[] rotateFrom = {diagonalRotate[0], diagonalRotate[1]}; //x,y
 					int[] roatteTo  = {diagonalRotate[2], diagonalRotate[3]}; //x,y   						
 					
-					// czy wychodzi poza zakres i nie moze tam byc mojego juz
-					if(j+1==b.getSize() && b.getState(i, j-4) == Color.EMPTY) 
-						return new PentagoMove(i,i-4,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
+					// czy moge ustawic na dole, jesli nie to sprobuje na gorze
 					if(j+1!=b.getSize() && b.getState(i, j+1) == Color.EMPTY) 
 						return new PentagoMove(i,j+1,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
+					else if(j-4>=0 && b.getState(i, j-4) == Color.EMPTY) 
+						return new PentagoMove(i,i-4,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
 				}	
 			}
 		}
@@ -163,28 +163,28 @@ public class KozakPlayer extends Player {
     	int[] rotateFrom = {-1,-1}; //x,y
 		int[] roatteTo  = {-1,-1};
     	//co obrocic -> po przekatnej
-		if(x<4) {
-			if(y<4) {
+		if(x<3) {
+			if(y<3) { // 2 cwiartka na 4
 				rotateFrom[0] = 3;
 				rotateFrom[1] = 3;
 				roatteTo[0] = 5;
 				roatteTo[1] = 3;
 			}
-			else {
-				rotateFrom[0] = 0;
-				rotateFrom[1] = 3;
-				roatteTo[0] = 2;
-				roatteTo[1] = 3;
-			}	
-		}
-		else{
-			if(y<4) {
+			else { // 3 cwiartka na 1
 				rotateFrom[0] = 3;
 				rotateFrom[1] = 0;
 				roatteTo[0] = 5;
 				roatteTo[1] = 0;
+			}	
+		}
+		else{
+			if(y<3) { // 1 cwiartka na 3
+				rotateFrom[0] = 0;
+				rotateFrom[1] = 3;
+				roatteTo[0] = 2;
+				roatteTo[1] = 3;
 			}
-			else {
+			else { // 4 cwiartka na 2
 				rotateFrom[0] = 0;
 				rotateFrom[1] = 0;
 				roatteTo[0] = 2;
@@ -195,6 +195,41 @@ public class KozakPlayer extends Player {
 		return tab;
     }
     
-   
+    // obraza kwadrat, w ktorego skład wchodzi punkt
+    private int[] thisSquareRotate(int x, int y) {
+    	int[] rotateFrom = {-1,-1}; //x,y
+		int[] roatteTo  = {-1,-1};
+    	//co obrocic -> po przekatnej
+		if(x<3) {
+			if(y<3) { // 2 cwiartka 
+				rotateFrom[0] = 0;
+				rotateFrom[1] = 0;
+				roatteTo[0] = 2;
+				roatteTo[1] = 0;
+			}
+			else { // 3 cwiartka
+				rotateFrom[0] = 0;
+				rotateFrom[1] = 3;
+				roatteTo[0] = 2;
+				roatteTo[1] = 3;
+			}	
+		}
+		else{
+			if(y<3) { // 1 cwiartka
+				rotateFrom[0] = 3;
+				rotateFrom[1] = 0;
+				roatteTo[0] = 5;
+				roatteTo[1] = 0;
+			}
+			else { // 4 cwiartka
+				rotateFrom[0] = 3;
+				rotateFrom[1] = 3;
+				roatteTo[0] = 5;
+				roatteTo[1] = 3;
+			}	
+		}
+		int[] tab = {rotateFrom[0], rotateFrom[1], roatteTo[0], roatteTo[1]};
+		return tab;
+    }
     
 }
