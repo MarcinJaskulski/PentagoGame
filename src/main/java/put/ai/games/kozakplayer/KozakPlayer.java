@@ -33,31 +33,43 @@ public class KozakPlayer extends Player {
     public Move nextMove(Board b0) {
     	opponentColor = getOpponent(this.getColor());
     	PentagoBoard b = (PentagoBoard)b0;
-
+    	
+    	
+    	
     	Move m;
-    	//Jeśli mogę wygrać to zrobię to!
-    	m = canWin(b);
+    	m = canWinNow(b);
     	if(m != null)
     		return m;
     	
-    	m = winBetween(b, getColor(), opponentColor);
-    	if(m != null)
-    		return m;
-    	
-    	//Jeśli przeciwnik może wygrać to przeszkodzę mu!
-    	m = opponentCanWin(b);
-    	if(m != null)
-    		return m;
-    	m = winBetween(b, opponentColor, getColor());
+    	m =canWinOpponent(b);
     	if(m != null)
     		return m;
     	
     	
-    	
+//    	//Jeśli mogę wygrać to zrobię to!
+//    	m = canWin(b);
+//    	if(m != null)
+//    		return m;
+//    	
+//    	m = winBetween(b, getColor(), opponentColor);
+//    	if(m != null)
+//    		return m;
+//    	
+//    	//Jeśli przeciwnik może wygrać to przeszkodzę mu!
+//    	m = opponentCanWin(b);
+//    	if(m != null)
+//    		return m;
+//    	m = winBetween(b, opponentColor, getColor());
+//    	if(m != null)
+//    		return m;
+//    	
+//    	
+//    	
     	//Startegia ruchu
     	m = centralSquare(b);
     	if(m != null)
     		return m;
+    	
     	
     	
     	
@@ -198,6 +210,36 @@ public class KozakPlayer extends Player {
 		return null;
     }
     
+    private Move canWinNow(PentagoBoard b) {
+    	List<Move> moves = b.getMovesFor(getColor());
+    	for(Move m: moves) {
+    		b.doMove(m);
+    		if(b.getWinner(getColor()) == getColor())
+    			return m;
+    		else
+    			b.undoMove(m);
+    	}
+    	return null;
+    }
+    
+    private Move canWinOpponent(PentagoBoard b) {
+    	List<Move> moves = b.getMovesFor(opponentColor);
+    	for(Move m: moves) {
+    		b.doMove(m);
+    		if(b.getWinner(getColor()) == opponentColor) {
+    			PentagoMove m1 = (PentagoMove)m;
+    			return new PentagoMove(m1.getPlaceX(), m1.getPlaceY(), m1.getRotateSrcX(), 
+    																   m1.getRotateSrcY(),
+    																   m1.getRotateDstX(),
+    																   m1.getRotateDstY(),
+    																	getColor());
+    		}
+    		else
+    			b.undoMove(m);
+    	}
+    	return null;
+    }
+    
     private Move opponentCanWin(PentagoBoard b) {
 		int poz = 0;
 		int pion = 0;
@@ -323,7 +365,6 @@ public class KozakPlayer extends Player {
 		int[] tab = {rotateFrom[0], rotateFrom[1], roatteTo[0], roatteTo[1]};
 		return tab;
     }
-    
     
     private Move centralSquare(PentagoBoard b) {
     	if(b.getState(1, 1) == Color.EMPTY)
