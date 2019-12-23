@@ -57,7 +57,6 @@ public class KozakPlayer extends Player {
         //System.out.println(a);
         
         PentagoMove a = (PentagoMove) moves.get(random.nextInt(moves.size())%10);
-        
         return a;
 		
     }
@@ -81,31 +80,37 @@ public class KozakPlayer extends Player {
 				else
 					pion=0;
 				
-				if(poz == 4) {// x=j, y=i
-					// co obrocic -> po przekatnej
-					int[] diagonalRotate = diagonalRotate(j,i);
-					int[] rotateFrom = {diagonalRotate[0], diagonalRotate[1]}; //x,y
-					int[] roatteTo  = {diagonalRotate[2], diagonalRotate[3]}; //x,y   						
-					
+				if(poz == 4) {// x=j, y=i					
 					// czy moge na kocu polozyc, jesli nie to na poczatku
 					if(j+1!=b.getSize() && b.getState(j+1, i) == Color.EMPTY) 
-						return new PentagoMove(j+1,i,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
+						return new PentagoMove(j+1,i,diagonalRotate(j+1,i)[0],
+													 diagonalRotate(j+1,i)[1],
+													 diagonalRotate(j+1,i)[2],
+													 diagonalRotate(j+1,i)[3],
+													 getColor());
 					else if(j-4>=0 && b.getState(j-4, i) == Color.EMPTY) 
-						return new PentagoMove(j-4,i,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
+						return new PentagoMove(j-4,i,diagonalRotate(j-4,i)[0],
+													 diagonalRotate(j-4,i)[1],
+													 diagonalRotate(j-4,i)[2],
+													 diagonalRotate(j-4,i)[3],
+													 getColor());
 				}
 				
 				if(pion == 4) { // odwrócone ośki x=i, y=j
-					// co obrocic -> po przekatnej
-					int[] diagonalRotate = diagonalRotate(i,j);
-					int[] rotateFrom = {diagonalRotate[0], diagonalRotate[1]}; //x,y
-					int[] roatteTo  = {diagonalRotate[2], diagonalRotate[3]}; //x,y   						
-					
 					// czy moge na dole, jeslinie to na górze
 					if(j+1!=b.getSize() && b.getState(i, j+1) == Color.EMPTY) 
-						return new PentagoMove(i,j+1,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());				
+						return new PentagoMove(i,j+1,diagonalRotate(i,j+1)[0],
+													 diagonalRotate(i,j+1)[1],
+													 diagonalRotate(i,j+1)[2],
+													 diagonalRotate(i,j+1)[3],
+													 getColor());				
 					else if(j-4>=0 && b.getState(i, j-4) == Color.EMPTY) 
-						return new PentagoMove(i,j-4,rotateFrom[0],rotateFrom[1],roatteTo[0],roatteTo[1],getColor());
-					}
+						return new PentagoMove(i,j-4,diagonalRotate(i,j-4)[0],
+													 diagonalRotate(i,j-4)[1],
+													 diagonalRotate(i,j-4)[2],
+													 diagonalRotate(i,j-4)[3],
+													 getColor());
+				}
 					
 			}
 		}
