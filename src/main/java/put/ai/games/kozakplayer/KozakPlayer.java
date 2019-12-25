@@ -43,23 +43,53 @@ public class KozakPlayer extends Player {
     	if(m != null)
     		return m;
     	
+//    	m = twoMoveToCertainWin(b, getColor());
+//    	if(m != null)
+//    		return m;
+    	//moze to wywalic i probowac zrobic opcje wygrania w dwoch miejscach
+    	m = twoMoveToWin(b, getColor()); //to wyzej niż twoMoveToCertainWin, bo wtedy przeciwnik musi zareagowac na nasza wygrana
+    	if(m != null)
+    		return m;
+//    	m = twoMoveToCertainWin(b, opponentColor);
+//    	if(m != null)
+//    		return m;
     	
-    	
-    	//Startegia ruchu
-    	m = centralSquare(b);
+    	m = threeMoveToWin(b);
     	if(m != null)
     		return m;
     	
-    	// szukanie wierszy i kolumn, gdzie mozna wygrac
-    	m = winBetween(b, getColor(), opponentColor);
-    	if(m != null) {
+    	m = twoMoveToWin(b, opponentColor); 
+    	if(m != null)
     		return m;
-    	}
-    		
-    	m = winBetween(b, opponentColor, getColor());
-    	if(m != null) {
-	    	return m;
-		}
+    	
+    	m = fourMoveToWin(b);
+    	if(m != null)
+    		return m;
+    	
+    	// 5 wolnych pol i obok mojego
+    	m = defaultMoveInGoodPlace(b);
+    	if(m != null)
+    		return m;
+    	
+//    	m = fiveMoveToWin(b);
+//    	if(m != null)
+//    		return m;
+//    	
+//    	//Startegia ruchu
+//    	m = centralSquare(b);
+//    	if(m != null)
+//    		return m;
+//    	
+    	// szukanie wierszy i kolumn, gdzie mozna wygrac
+//    	m = winBetween(b, getColor(), opponentColor);
+//    	if(m != null) {
+//    		return m;
+//    	}
+//    		
+//    	m = winBetween(b, opponentColor, getColor());
+//    	if(m != null) {
+//	    	return m;
+//		}
     	// stwianie obok swoich
 //    	m = putNextTo(b);
 //    	if(m != null) {
@@ -76,7 +106,7 @@ public class KozakPlayer extends Player {
     	
         List<Move> moves = b.getMovesFor(this.getColor());        
         
-        PentagoMove a = (PentagoMove) moves.get(random.nextInt(moves.size())%10);
+        PentagoMove a = (PentagoMove) moves.get(random.nextInt(moves.size())%4);
         return a;
 		
     }
@@ -135,20 +165,160 @@ public class KozakPlayer extends Player {
     	return null;
     }
     
-//    private Move putNextTo(PentagoBoard b) {
-//    	for(int i=0; i<b.getSize(); i++) {
-//    		if(pawnInRow(b, i, getColor())>0) {
-//    			for(int j=0; j<b.getSize(); i++) {
-//    				if(b.getState(j, i) == getColor()) {
-//    					int[] place= freeNeighbour(j,i); 
-//    					
-//    				}
-//    					
-//    			}
-//    		}
-//    	}
-//    	return null;
-//    }
+    private Move twoMoveToWin(PentagoBoard b, Color who) {
+    	List<Move> moves = b.getMovesFor(who);
+    	for(Move m: moves) {
+    		b.doMove(m);
+			List<Move> moves1 = b.getMovesFor(who);
+			for(Move m1: moves1) {
+	    		b.doMove(m1);
+	    		if(b.getWinner(who) == who)
+	    			return m;
+	    		else 
+	    			b.undoMove(m1);
+			
+    		}
+    		b.undoMove(m);
+    	}
+    	return null;
+    }
+    
+    // sprawdza, czy wykonanie tgo ruchu nie spowoduje otwrcie podwójnej opcji wygrania, a przeciwnik bedzie w stanei zablokowac jedna
+    private Move twoMoveToCertainWin(PentagoBoard b, Color who) {
+    	int winCounter=0;
+    	List<Move> moves = b.getMovesFor(who);
+    	for(Move m: moves) {
+    		winCounter=0;
+    		b.doMove(m);
+			List<Move> moves1 = b.getMovesFor(who);
+			for(Move m1: moves1) {
+	    		b.doMove(m1);
+	    		if(b.getWinner(who) == who) {
+	    			winCounter++;
+	    		}
+	    		b.undoMove(m1);
+    		}
+    		b.undoMove(m);
+    		if(winCounter>1)
+    			return m;
+    	}
+    	return null;
+    }
+    
+    private Move threeMoveToWin(PentagoBoard b) {
+    	List<Move> moves = b.getMovesFor(getColor());
+    	for(Move m: moves) {
+    		PentagoMove pM = (PentagoMove)m;
+    		if(havMyNeighbour(b,getColor(), pM.getPlaceX(), pM.getPlaceY()) == false)
+    			continue;
+    		b.doMove(m);
+			List<Move> moves1 = b.getMovesFor(getColor());
+			for(Move m1: moves1) {
+	    		b.doMove(m1);
+    			List<Move> moves2 = b.getMovesFor(getColor());
+    			for(Move m2: moves2) {
+    	    		b.doMove(m2);
+    	    		if(b.getWinner(getColor()) == getColor())
+    	    			return m;
+    	    		else
+    	    			b.undoMove(m2);
+	    		}
+	    		b.undoMove(m1);
+			}
+    		b.undoMove(m);
+    	}
+    	return null;
+    }
+    
+    private Move fourMoveToWin(PentagoBoard b) {
+    	List<Move> moves = b.getMovesFor(getColor());
+    	for(Move m: moves) {
+    		PentagoMove pM = (PentagoMove)m;
+    		if(havMyNeighbour(b,getColor(), pM.getPlaceX(), pM.getPlaceY()) == false)
+    			continue;
+    		b.doMove(m);
+			List<Move> moves1 = b.getMovesFor(getColor());
+			for(Move m1: moves1) {
+	    		b.doMove(m1);
+    			List<Move> moves2 = b.getMovesFor(getColor());
+    			for(Move m2: moves2) {
+    	    		b.doMove(m2);
+	    			List<Move> moves3 = b.getMovesFor(getColor());
+	    			for(Move m3: moves3) {
+	    	    		b.doMove(m3);
+	    	    		if(b.getWinner(getColor()) == getColor())
+	    	    			return m;
+	    	    		else
+	    	    			b.undoMove(m3);
+    	    		}
+    	    		b.undoMove(m2);
+	    		}
+	    		b.undoMove(m1);
+    		}
+    		b.undoMove(m);
+    	}
+    	return null;
+    }
+    
+    //zbyt zasobożerne
+    private Move fiveMoveToWin(PentagoBoard b) {
+    	List<Move> moves = b.getMovesFor(getColor());
+    	for(Move m: moves) {
+    		b.doMove(m);
+			List<Move> moves1 = b.getMovesFor(getColor());
+			for(Move m1: moves1) {
+	    		b.doMove(m1);
+    			List<Move> moves2 = b.getMovesFor(getColor());
+    			for(Move m2: moves2) {
+    	    		b.doMove(m2);
+	    			List<Move> moves3 = b.getMovesFor(getColor());
+	    			for(Move m3: moves3) {
+	    	    		b.doMove(m3);
+	    	    		List<Move> moves4 = b.getMovesFor(getColor());
+	    	    		for(Move m4: moves4) {
+		    	    		b.doMove(m4);
+		    	    		if(b.getWinner(getColor()) == getColor())
+		    	    			return m;
+		    	    		else
+		    	    			b.undoMove(m4);
+	    	    		}
+    	    		}
+    	    		b.undoMove(m2);
+	    		}
+	    		b.undoMove(m1);
+    		}
+    		b.undoMove(m);
+    	}
+    	return null;
+    }
+    
+    private Boolean havMyNeighbour(PentagoBoard b, Color who, int x,int y) {
+    	if(x-1>=0 && b.getState(x-1, y) == who)
+    		return true;
+    	if(x+1<b.getSize() && b.getState(x+1, y) == who)
+    		return true;
+    	if(y-1>=0 && b.getState(x, y-1) == who)
+    		return true;
+    	if(y+1<b.getSize() && b.getState(x, y+1) == who)
+    		return true;
+    	return false;
+    }
+    
+    
+    // 5 wolnych + obok mojego
+    private Move defaultMoveInGoodPlace(PentagoBoard b) {
+    	List<Move> moves = b.getMovesFor(getColor());
+    	for(Move m: moves) {
+    		PentagoMove pM = (PentagoMove)m;
+    		if(havMyNeighbour(b,getColor(), pM.getPlaceX(), pM.getPlaceY()) == false)
+    			continue;
+    		if(canWinInRow(b,pM.getPlaceY(),getColor()))
+    			return m;
+    		if(canWinInColumn(b,pM.getPlaceX(),getColor()))
+    			return m;
+    	}
+    	return null;
+    }
 //    
     // ruch w lini, gdzie mamy już dwa nasze
     private Move winBetween(PentagoBoard b, Color lookingForColor, Color badColor) {
