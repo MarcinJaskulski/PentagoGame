@@ -211,6 +211,34 @@ public class KozakPlayer extends Player {
     	return null;
     }
     
+ // eliminuje ruch tworzący atak z dwóch możliwych pól -> nie do obronienia
+    private Move twoMoveBlockingWin(PentagoBoard b0) {
+    	PentagoBoard b = (PentagoBoard)b0.clone();
+    	List<Move> moves = b.getMovesFor(getColor());
+    	int amount = 0;
+    	for(Move m: moves) {
+    		amount =0;
+    		b.doMove(m);
+
+    		List<Move> moves1 = b.getMovesFor(opponentColor);
+    		for(Move m1: moves1) {
+    			b.doMove(m1);
+    			List<Move> moves2 = b.getMovesFor(opponentColor);
+    			for(Move m2: moves2) { // jesli nie ma w mozliwosci wygranej to to jest ten blok
+        			b.doMove(m2);
+        			if(b.getWinner(opponentColor) != opponentColor) { // nie wygrał przeciwnik, to gites
+        				amount++;
+        			}
+        			b.undoMove(m2);
+        			if(moves1.size()*moves2.size() == amount) // jesli nie ma żadnego, który będzie mógł po nim wygrać
+        				return m;
+        		}
+    			b.undoMove(m1);
+    		}
+    		b.undoMove(m);
+    	}
+    	return null;
+    }
 
     
     private Move twoMoveToWin(PentagoBoard b0, Color who) {
