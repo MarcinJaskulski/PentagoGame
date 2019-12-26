@@ -62,7 +62,11 @@ public class KozakPlayer extends Player {
     		}
     		b.undoMove(m);
     	}
-    		
+    	
+    	Move m2 = moveBlockingWin(b);
+		if(m2 != null) {
+			return m2;
+		}
     	
     	   	
         List<Move> moves = b.getMovesFor(this.getColor());        
@@ -99,6 +103,7 @@ public class KozakPlayer extends Player {
     				m1.getRotateDstX(), m1.getRotateDstY(),
     				m1.getRotateSrcX(), m1.getRotateSrcY(),
     				getColor());
+    		
     	}
 
     	
